@@ -8,14 +8,12 @@ void main() {
   LocatorService.setup();
   runApp(Theme(data: AppTheme.themeData, child: MyApp()));
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'HPW',
-      home: const WelcomePage()
-    );
+    return MaterialApp(title: 'HPW', home: const WelcomePage());
   }
 }
