@@ -44,5 +44,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# generated files
+*.mocks.dart
+*.g.dart
+*.freezed.dart
 
 *.lock
