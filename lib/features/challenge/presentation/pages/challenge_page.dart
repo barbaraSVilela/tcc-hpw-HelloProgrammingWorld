@@ -21,63 +21,63 @@ class _ChallengePageState extends State<ChallengePage> {
 
   final List<Widget> _challengeSpaces = [
     Container(
-        color: Color(0xFFB82000),
+        color: const Color(0xFFB82000),
         child: DragTarget(
             builder: (context, cadidateData, rejectedData) {
-                return Text('TESTE');
+                return const Text('TESTE');
     })
     ),
     Container(
-        color: Color(0xFFB82000),
+        color: const Color(0xFFB82000),
         child: DragTarget(
             builder: (context, cadidateData, rejectedData) {
-              return Text('TESTE');
+              return const Text('TESTE');
             })
     ),
     Container(
-        color: Color(0xFFB82000),
+        color: const Color(0xFFB82000),
         child: DragTarget(
             builder: (context, cadidateData, rejectedData) {
-              return Text('TESTE');
+              return const Text('TESTE');
             })
     ),
     Container(
-        color: Color(0xFFB82000),
+        color: const Color(0xFFB82000),
         child: DragTarget(
             builder: (context, cadidateData, rejectedData) {
-              return Text('TESTE');
+              return const Text('TESTE');
             })
     ),
   ];
   final List<Widget> _opcaos = [
     Column(
       children: [
-        Draggable(child: Text('public'), feedback: Container(
-          child: Text('public'),
-        )),
-        Draggable(child: Text('private'), feedback: Container(
-          child: Text('private'),
-        )),
+        Draggable(feedback: Container(
+          child: const Text('public'),
+        ), child: const Text('public')),
+        Draggable(feedback: Container(
+          child: const Text('private'),
+        ), child: const Text('private')),
       ],
     ),
     Column(
       children: [
-        Draggable(child: Text('public'), feedback: Container(
-          child: Text('public'),
-        )),
-        Draggable(child: Text('private'), feedback: Container(
-          child: Text('private'),
-        )),
+        Draggable(feedback: Container(
+          child: const Text('public'),
+        ), child: const Text('public')),
+        Draggable(feedback: Container(
+          child: const Text('private'),
+        ), child: const Text('private')),
       ],
     ),
     Column(
       children: [
-        Draggable(child: Text('public'), feedback: Container(
-          child: Text('public'),
-        )),
-        Draggable(child: Text('private'), feedback: Container(
-          child: Text('private'),
-        )),
+        Draggable(feedback: Container(
+          child: const Text('public'),
+        ), child: const Text('public')),
+        Draggable(feedback: Container(
+          child: const Text('private'),
+        ), child: const Text('private')),
       ],
     ),
   ];
@@ -128,20 +128,20 @@ class _ChallengePageState extends State<ChallengePage> {
   Widget displayChallengePrompt(BuildContext context) {
     return Center(
       child: Container(
-        color: selected ? Color(0xFF006397) : Color(0xFFB82000),
+        color: selected ? const Color(0xFF006397) : const Color(0xFFB82000),
         alignment: Alignment.center,
-        child: Text('PROMPT'),
+        child: const Text('PROMPT'),
       ),
     );
   }
 
   Widget displayChallenge(BuildContext context) {
     return GridView.count(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         crossAxisCount: 8,
-        children: _challengeSpaces,
         crossAxisSpacing: 3,
         mainAxisSpacing: 3,
+        children: _challengeSpaces,
     );
   }
 

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
-import 'package:tcc_hpw_hello_programming_world/features/challenge/presentation/pages/challenge_page.dart';
 import 'package:tcc_hpw_hello_programming_world/locator.dart';
 import 'package:tcc_hpw_hello_programming_world/features/welcome/welcome_page.dart';
 
 void main() {
   LocatorService.setup();
-  runApp(Theme(data: AppTheme.themeData, child: MyApp()));
+  runApp(Theme(data: AppTheme.themeData, child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -14,6 +13,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'HPW', home: const WelcomePage());
+    return const MaterialApp(title: 'HPW', home: WelcomePage());
   }
 }
