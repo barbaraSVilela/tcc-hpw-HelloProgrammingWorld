@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tcc_hpw_hello_programming_world/features/authentication/domain/bloc/authentication_bloc.dart';
 
-
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
 
@@ -32,10 +31,18 @@ class _WelcomePageState extends State<WelcomePage> {
                   Text((state).credentials.user.email ?? ''),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                      onPressed: () async {
-                        _bloc.add(const SignOut());
-                      },
-                      child: const Text("Log out")),
+                    onPressed: () async {
+                      _bloc.add(const SignOut());
+                    },
+                    child: const Text("Log out"),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      _bloc.add(const SignOut());
+                    },
+                    child: const Text("Learn!"),
+                  ),
                 ],
               ),
             );

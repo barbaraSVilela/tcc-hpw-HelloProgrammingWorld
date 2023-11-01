@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'challenge.freezed.dart';
-part 'challenge.G.dart';
+part 'challenge.g.dart';
 
 @freezed
 class Challenge with _$Challenge {
