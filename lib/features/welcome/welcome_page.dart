@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tcc_hpw_hello_programming_world/features/authentication/domain/bloc/authentication_bloc.dart';
+import 'package:tcc_hpw_hello_programming_world/features/navigation/navigation_routes.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -39,7 +40,8 @@ class _WelcomePageState extends State<WelcomePage> {
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      _bloc.add(const SignOut());
+                      Navigator.push(
+                          context, NavigationRoutes.challengePageRoute.call());
                     },
                     child: const Text("Learn!"),
                   ),

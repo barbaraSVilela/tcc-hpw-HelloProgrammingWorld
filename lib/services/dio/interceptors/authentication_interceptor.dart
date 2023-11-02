@@ -11,6 +11,7 @@ class AuthenticationInterceptor extends Interceptor {
     var bloc = GetIt.I<AuthenticationBloc>();
     if (bloc.state is Authenticated) {
       var token = (bloc.state as Authenticated).credentials.accessToken;
+      print(token);
       options.headers["Authorization"] = "Bearer $token";
     }
     return super.onRequest(options, handler);
