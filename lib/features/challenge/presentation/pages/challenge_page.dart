@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
+import 'package:tcc_hpw_hello_programming_world/features/challenge/domain/entity/challenge.dart';
 import 'package:tcc_hpw_hello_programming_world/features/challenge/presentation/bloc/challenge_bloc.dart';
 
 class ChallengePage extends StatefulWidget {
@@ -11,7 +13,6 @@ class ChallengePage extends StatefulWidget {
 }
 
 class _ChallengePageState extends State<ChallengePage> {
-  bool selected = false;
   late ChallengeBloc _bloc;
   @override
   void initState() {
@@ -20,144 +21,120 @@ class _ChallengePageState extends State<ChallengePage> {
     _bloc.add(const ChallengeEvent.loadChallenge());
     super.initState();
   }
-
-  final List<Widget> _challengeSpaces = [
-    Container(
-        color: const Color(0xFFB82000),
-        child: DragTarget(builder: (context, cadidateData, rejectedData) {
-          return const Text('TESTE');
-        })),
-    Container(
-        color: const Color(0xFFB82000),
-        child: DragTarget(builder: (context, cadidateData, rejectedData) {
-          return const Text('TESTE');
-        })),
-    Container(
-        color: const Color(0xFFB82000),
-        child: DragTarget(builder: (context, cadidateData, rejectedData) {
-          return const Text('TESTE');
-        })),
-    Container(
-        color: const Color(0xFFB82000),
-        child: DragTarget(builder: (context, cadidateData, rejectedData) {
-          return const Text('TESTE');
-        })),
-  ];
-  final List<Widget> _opcaos = [
-    Column(
-      children: [
-        Draggable(
-            feedback: Container(
-              child: const Text('public'),
-            ),
-            child: const Text('public')),
-        Draggable(
-            feedback: Container(
-              child: const Text('private'),
-            ),
-            child: const Text('private')),
-      ],
-    ),
-    Column(
-      children: [
-        Draggable(
-            feedback: Container(
-              child: const Text('public'),
-            ),
-            child: const Text('public')),
-        Draggable(
-            feedback: Container(
-              child: const Text('private'),
-            ),
-            child: const Text('private')),
-      ],
-    ),
-    Column(
-      children: [
-        Draggable(
-            feedback: Container(
-              child: const Text('public'),
-            ),
-            child: const Text('public')),
-        Draggable(
-            feedback: Container(
-              child: const Text('private'),
-            ),
-            child: const Text('private')),
-      ],
-    ),
-  ];
   @override
   Widget build(BuildContext context) {
+    return Scaffold(body: Center(
+      child: BlocBuilder<ChallengeBloc,ChallengeState>(
+        bloc: _bloc,
+        builder: (context,state){
+          if(state is Loading){
+            return Column(
+              children: [Text("Desafio Carregando"), CircularProgressIndicator()],
+            );
+          }
+          else if(state is Loaded){
+            Challenge _challenge = state.challenge;
+            return Column(
+              children: [
+                Expanded(child: _displayChallengePrompt(context, _challenge.prompt),flex: 3),
+                Expanded(child: _displayChallenge(context, _challenge.solution),flex: 6),
+                Expanded(child: _displayButtonsAndInfo(context, _challenge.level, 1),flex: 1),
+                Expanded(child: Text("Teste"),flex:5)
+              ],
+            );
+          }else{
+            return Padding(padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Text("Error loading challenge",
+                  style: TextStyle(
+                    color: AppTheme.colorScheme.error
+                  ),));
+          }
+    } ,
+      )
+    )
+    );
+
+  }
+
+  Widget _displayChallengePrompt(BuildContext context, String challengePrompt) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            displayLevel(context),
-            displayChance(context),
-          ],
-        ),
-      ),
-      body: GestureDetector(
-        onDoubleTap: () {
-          setState(() {
-            selected = !selected;
-          });
-        },
-        child: Column(
-          children: [
-            Expanded(
-              flex: selected ? 7 : 4,
-              child: displayChallengePrompt(context),
-            ),
-            Expanded(
-              flex: selected ? 4 : 7,
-              child: displayChallenge(context),
-            ),
-            Divider(
-              height: 20,
-              thickness: 2,
-              color: AppTheme.colorScheme.primaryContainer,
-            ),
-            Expanded(flex: 7, child: displayOptions(context))
-          ],
-        ),
-      ),
+      backgroundColor: AppTheme.colorScheme.inversePrimary,
+      body:ListView(
+        scrollDirection: Axis.vertical,
+        padding: EdgeInsets.only(top:50.0),
+          children: [Center(child: Text("Desafio", style: TextStyle(fontWeight: FontWeight.bold))), Text(challengePrompt)])
     );
-  }
 
-  Widget displayLevel(BuildContext context) {
-    return const Text('Nivel');
-  }
-
-  Widget displayChance(BuildContext context) {
-    return const Text('Tentativa');
-  }
-
-  Widget displayChallengePrompt(BuildContext context) {
-    return Center(
+      Center(
       child: Container(
-        color: selected ? const Color(0xFF006397) : const Color(0xFFB82000),
-        alignment: Alignment.center,
-        child: const Text('PROMPT'),
+        decoration: BoxDecoration(
+          border: Border.all(width: 2.0, color: Colors.black)
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(30.0),
+          child:  Column(
+            children: [const Text("Desafio", style: TextStyle(fontWeight: FontWeight.bold)), Text(challengePrompt)],
+          ),
+        )
       ),
     );
   }
 
-  Widget displayChallenge(BuildContext context) {
-    return GridView.count(
-      padding: const EdgeInsets.all(10),
-      crossAxisCount: 8,
-      crossAxisSpacing: 3,
-      mainAxisSpacing: 3,
-      children: _challengeSpaces,
+  Widget _displayChallenge(BuildContext context, List<String> solution) {
+    return Scaffold(
+        body: GridView.builder(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 80.0,
+                crossAxisSpacing: 10.0,
+                mainAxisSpacing: 10.0
+            ),
+            padding: const EdgeInsets.all(8.0),
+            itemCount: solution.length,
+            itemBuilder: (context, index) {
+              return Container(
+              child: _buildOptionWithDropZone(solution[index])
+              );
+            }
+    ));
+  }
+  Widget _buildOptionWithDropZone(String option) {
+    return Expanded(
+        child: DragTarget(
+            builder: (context, candidateOption,rejectedOption){
+              return ColoredBox(color: AppTheme.colorScheme.secondary);
+            }
+          )
+        );
+  }
+  Widget _displayButtonsAndInfo(BuildContext context,int level, int attempt){
+    return Container(
+      alignment: Alignment.topCenter,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          ElevatedButton(
+              onPressed: null,
+              child: Text(
+                  "Run"
+              )),
+          Text("Nível: $level"),
+          Text("Tentativa: $attempt"),
+          ElevatedButton(
+              onPressed: null,
+              child: Text(
+                  "Desistir"
+              ))
+        ],
+      ),
     );
   }
-
-  Widget displayOptions(BuildContext context) {
-    return Row(
-      children: _opcaos,
+  Widget _buildOptions(BuildContext context,List<String> options){
+    return Scaffold(
+      body: ListView.builder(
+          itemBuilder: (context,index){
+            return 
+          })
     );
   }
 }
+
