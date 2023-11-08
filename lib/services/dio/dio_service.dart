@@ -4,7 +4,8 @@ import 'package:tcc_hpw_hello_programming_world/services/dio/interceptors/authen
 class DioService {
   Dio setupDio() {
     var dio = Dio();
-    dio.options = BaseOptions(baseUrl: 'http://localhost:7071/api');
+    dio.options =
+        BaseOptions(baseUrl: 'https://hpw-backend.azurewebsites.net/api');
     dio.interceptors.add(AuthenticationInterceptor());
     return dio;
   }
