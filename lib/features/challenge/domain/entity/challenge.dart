@@ -11,6 +11,7 @@ class Challenge with _$Challenge {
     required int level,
     required int coins,
     @Default([]) List<String> solution,
+    @Default([]) List<String> options,
   }) = _Challenge;
 
 factory Challenge.fromJson(Map<String, Object?> json) =>
