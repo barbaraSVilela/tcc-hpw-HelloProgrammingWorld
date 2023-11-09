@@ -41,7 +41,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   ElevatedButton(
                     onPressed: () async {
                       Navigator.push(
-                          context, NavigationRoutes.challengePageRoute.call());
+                          context, NavigationRoutes.mainPageRoute.call());
                     },
                     child: const Text("Learn!"),
                   ),

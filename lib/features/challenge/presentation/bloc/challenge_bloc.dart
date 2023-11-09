@@ -16,12 +16,15 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
 
   Future<FutureOr<void>> _onLoadChallenge(
       LoadChallenge event, Emitter<ChallengeState> emit) async {
-    emit(const ChallengeState.loading());
-    try {
-      var challenge = await GetIt.I<ChallengeRepository>().getDailyChallenge();
-      emit(ChallengeState.loaded(challenge));
-    } catch (_) {
-      emit(const ChallengeState.errorLoading());
+    if (state is! Loaded) {
+      emit(const ChallengeState.loading());
+      try {
+        var challenge =
+            await GetIt.I<ChallengeRepository>().getDailyChallenge();
+        emit(ChallengeState.loaded(challenge));
+      } catch (_) {
+        emit(const ChallengeState.errorLoading());
+      }
     }
   }
 }
