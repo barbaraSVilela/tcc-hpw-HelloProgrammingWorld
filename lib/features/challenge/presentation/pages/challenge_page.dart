@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
 import 'package:tcc_hpw_hello_programming_world/features/challenge/presentation/bloc/challenge_bloc.dart';
+import 'package:tcc_hpw_hello_programming_world/foundation/hpw_colors.dart';
 
 class ChallengePage extends StatefulWidget {
   const ChallengePage({super.key});
@@ -134,12 +135,13 @@ class _ChallengePageState extends State<ChallengePage> {
                             direction: Axis.horizontal,
                             children: List.generate(
                               state.challenge.options.length,
-                              (index) => _PillContainer(
-                                text: state.challenge.options[index],
-                                backgroundColor:
-                                    AppTheme.colorScheme.primaryContainer,
-                                textColor: Colors.black,
-                              ),
+                              (index) {
+                                return _PillContainer(
+                                  text: state.challenge.options[index],
+                                  backgroundColor: _calculateColor(index),
+                                  textColor: Colors.black,
+                                );
+                              },
                             ),
                             // children: [_PillContainer(text: 'test')],
                           ),
@@ -157,6 +159,17 @@ class _ChallengePageState extends State<ChallengePage> {
         }
       },
     ));
+  }
+
+  Color _calculateColor(int index) {
+    if (index % 3 == 0) {
+      return HpwColors.pink;
+    } else if (index % 3 == 1) {
+      return HpwColors.green;
+    } else if (index % 3 == 2) {
+      return HpwColors.yellow;
+    }
+    return AppTheme.colorScheme.primaryContainer;
   }
 }
 
