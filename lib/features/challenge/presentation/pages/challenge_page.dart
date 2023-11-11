@@ -14,7 +14,7 @@ class ChallengePage extends StatefulWidget {
 
 class _ChallengePageState extends State<ChallengePage> {
   late ChallengeBloc _bloc;
-  List<String> _selectedOptions = [];
+  final List<String> _selectedOptions = [];
   @override
   void initState() {
     _bloc = GetIt.I<ChallengeBloc>();
@@ -30,7 +30,7 @@ class _ChallengePageState extends State<ChallengePage> {
       bloc: _bloc,
       builder: (context, state) {
         if (state is Loading) {
-          return Padding(
+          return const Padding(
               padding: EdgeInsets.all(100),
               child: Column(
                 children: [
@@ -39,24 +39,24 @@ class _ChallengePageState extends State<ChallengePage> {
                 ],
               ));
         } else if (state is Loaded) {
-          Challenge _challenge = state.challenge;
+          Challenge challenge = state.challenge;
           return Column(
             children: [
               Expanded(
-                  child: _displayChallengePrompt(context, _challenge.prompt),
-                  flex: 7),
+                  flex: 7,
+                  child: _displayChallengePrompt(context, challenge.prompt)),
               Expanded(
-                  child: _displayButtonsAndInfo(context, _challenge.level, 1),
-                  flex: 2),
+                  flex: 2,
+                  child: _displayButtonsAndInfo(context, challenge.level, 1)),
               Expanded(
-                  child: _buildChallenge(context, _challenge.solution, _challenge.options),
-                  flex: 5),
-
+                  flex: 5,
+                  child: _buildChallenge(
+                      context, challenge.solution, challenge.options)),
             ],
           );
         } else {
           return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 "Error loading challenge",
                 style: TextStyle(color: AppTheme.colorScheme.error),
@@ -67,64 +67,63 @@ class _ChallengePageState extends State<ChallengePage> {
   }
 
   Widget _displayChallengePrompt(BuildContext context, String challengePrompt) {
-    return Padding(padding: EdgeInsets.symmetric(vertical: 40),
-    child: Card(
-      elevation: 10,
-      color: AppTheme.colorScheme.primary,
-      shape: RoundedRectangleBorder(
-          side: BorderSide(color: AppTheme.colorScheme.outline),
-          borderRadius: BorderRadius.all(Radius.circular(8))),
-      child:Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Text("DESAFIO", style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-                color: AppTheme.colorScheme.onPrimary
-            )),
-            SingleChildScrollView(
-              physics: ClampingScrollPhysics(),
-              child: Text(challengePrompt,
-                  style: TextStyle(
-                      color: AppTheme.colorScheme.onPrimary,
-                      fontSize: 16
-                  ),
-                  textAlign: TextAlign.justify
-              ),
-            )
-          ],
-        )
-      )
-    ));
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: Card(
+            elevation: 10,
+            color: AppTheme.colorScheme.primary,
+            shape: RoundedRectangleBorder(
+                side: BorderSide(color: AppTheme.colorScheme.outline),
+                borderRadius: const BorderRadius.all(Radius.circular(8))),
+            child: Container(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    Text("DESAFIO",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: AppTheme.colorScheme.onPrimary)),
+                    SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      child: Text(challengePrompt,
+                          style: TextStyle(
+                              color: AppTheme.colorScheme.onPrimary,
+                              fontSize: 16),
+                          textAlign: TextAlign.justify),
+                    )
+                  ],
+                ))));
   }
 
   Widget _displayChallenge(BuildContext context, List<String> solution) {
     return GridView.count(
-        crossAxisCount: 8,
-        padding: const EdgeInsets.all(8.0),
-        children: _transformAttempt(),
+      crossAxisCount: 8,
+      padding: const EdgeInsets.all(8.0),
+      children: _transformAttempt(),
     );
   }
-  void _onItemTappedRemove(String item){
+
+  void _onItemTappedRemove(String item) {
     setState(() {
       _selectedOptions.remove(item);
     });
   }
-  Widget _attempt(String data){
+
+  Widget _attempt(String data) {
     return GestureDetector(
-      onTap: () {
-        _onItemTappedRemove(data);
-      },
-      child: Container(
-        color: AppTheme.colorScheme.secondary,
-        padding: EdgeInsets.all(10),
-        child: Text(data, style: TextStyle(color: AppTheme.colorScheme.onSecondary)),
-      )
-    );
+        onTap: () {
+          _onItemTappedRemove(data);
+        },
+        child: Container(
+          color: AppTheme.colorScheme.secondary,
+          padding: const EdgeInsets.all(10),
+          child: Text(data,
+              style: TextStyle(color: AppTheme.colorScheme.onSecondary)),
+        ));
   }
 
-  List<Widget> _transformAttempt(){
+  List<Widget> _transformAttempt() {
     List<Widget> attempts = [];
     attempts = _selectedOptions.map((String e) => _attempt(e)).toList();
     return attempts;
@@ -136,23 +135,27 @@ class _ChallengePageState extends State<ChallengePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          ElevatedButton(onPressed: null, child: Text("Run")),
+          const ElevatedButton(onPressed: null, child: Text("Run")),
           Text("Nível: $level"),
           Text("Tentativa: $attempt"),
-          ElevatedButton(onPressed: null, child: Text("Desistir"))
+          const ElevatedButton(onPressed: null, child: Text("Desistir"))
         ],
       ),
     );
   }
 
-  Widget _buildChallenge(BuildContext context,List<String> solution,List<String>options){
-      return Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [_displayChallenge(context, solution),_displayOptions(context, options)],
-        ),
-      );
+  Widget _buildChallenge(
+      BuildContext context, List<String> solution, List<String> options) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _displayChallenge(context, solution),
+          _displayOptions(context, options)
+        ],
+      ),
+    );
   }
 
   Widget _displayOptions(BuildContext context, List<String> options) {
@@ -162,20 +165,19 @@ class _ChallengePageState extends State<ChallengePage> {
         itemBuilder: (context, index) {
           return GestureDetector(
             child: Container(
-              color: AppTheme.colorScheme.tertiary,
-              child: Text(options[index],style: TextStyle(color: AppTheme.colorScheme.onTertiary))
-            ),
-          onTap:() {
-            _onTappedAdd(options[index]);
-          },
+                color: AppTheme.colorScheme.tertiary,
+                child: Text(options[index],
+                    style: TextStyle(color: AppTheme.colorScheme.onTertiary))),
+            onTap: () {
+              _onTappedAdd(options[index]);
+            },
           );
         });
   }
 
-  void _onTappedAdd(String data){
+  void _onTappedAdd(String data) {
     setState(() {
       _selectedOptions.add(data);
     });
   }
 }
-
