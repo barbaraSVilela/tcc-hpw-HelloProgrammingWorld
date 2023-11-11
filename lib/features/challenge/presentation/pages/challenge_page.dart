@@ -14,6 +14,7 @@ class ChallengePage extends StatefulWidget {
 
 class _ChallengePageState extends State<ChallengePage> {
   late ChallengeBloc _bloc;
+  List<String> _selectedOptions = [];
   @override
   void initState() {
     _bloc = GetIt.I<ChallengeBloc>();
@@ -24,7 +25,8 @@ class _ChallengePageState extends State<ChallengePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: BlocBuilder<ChallengeBloc, ChallengeState>(
+    return Center(
+        child: BlocBuilder<ChallengeBloc, ChallengeState>(
       bloc: _bloc,
       builder: (context, state) {
         if (state is Loading) {
@@ -42,15 +44,14 @@ class _ChallengePageState extends State<ChallengePage> {
             children: [
               Expanded(
                   child: _displayChallengePrompt(context, _challenge.prompt),
-                  flex: 3),
-              Expanded(
-                  child: _displayChallenge(context, _challenge.solution),
-                  flex: 6),
+                  flex: 7),
               Expanded(
                   child: _displayButtonsAndInfo(context, _challenge.level, 1),
-                  flex: 1),
+                  flex: 2),
               Expanded(
-                  child: _displayOptions(context, _challenge.options), flex: 3)
+                  child: _buildChallenge(context, _challenge.solution, _challenge.options),
+                  flex: 5),
+
             ],
           );
         } else {
@@ -66,39 +67,67 @@ class _ChallengePageState extends State<ChallengePage> {
   }
 
   Widget _displayChallengePrompt(BuildContext context, String challengePrompt) {
-    return Container(
-            padding: EdgeInsets.symmetric(vertical: 50),
-            alignment: Alignment.center,
-            child: Column(
-              children: [
-                Text("DESAFIO", style: TextStyle(fontWeight: FontWeight.bold)),
-                SingleChildScrollView(
-                  physics: ClampingScrollPhysics(),
-                  child: Text(challengePrompt),
-                )
-              ],
-            ));
+    return Padding(padding: EdgeInsets.symmetric(vertical: 40),
+    child: Card(
+      elevation: 10,
+      color: AppTheme.colorScheme.primary,
+      shape: RoundedRectangleBorder(
+          side: BorderSide(color: AppTheme.colorScheme.outline),
+          borderRadius: BorderRadius.all(Radius.circular(8))),
+      child:Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          children: [
+            Text("DESAFIO", style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: AppTheme.colorScheme.onPrimary
+            )),
+            SingleChildScrollView(
+              physics: ClampingScrollPhysics(),
+              child: Text(challengePrompt,
+                  style: TextStyle(
+                      color: AppTheme.colorScheme.onPrimary,
+                      fontSize: 16
+                  ),
+                  textAlign: TextAlign.justify
+              ),
+            )
+          ],
+        )
+      )
+    ));
   }
 
   Widget _displayChallenge(BuildContext context, List<String> solution) {
-    return GridView.builder(
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 80.0,
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0),
-            padding: const EdgeInsets.all(8.0),
-            itemCount: solution.length,
-            itemBuilder: (context, index) {
-              return Container(
-                  child: _buildOptionWithDropZone(solution[index]));
-            });
+    return GridView.count(
+        crossAxisCount: 8,
+        padding: const EdgeInsets.all(8.0),
+        children: _transformAttempt(),
+    );
+  }
+  void _onItemTappedRemove(String item){
+    setState(() {
+      _selectedOptions.remove(item);
+    });
+  }
+  Widget _attempt(String data){
+    return GestureDetector(
+      onTap: () {
+        _onItemTappedRemove(data);
+      },
+      child: Container(
+        color: AppTheme.colorScheme.secondary,
+        padding: EdgeInsets.all(10),
+        child: Text(data, style: TextStyle(color: AppTheme.colorScheme.onSecondary)),
+      )
+    );
   }
 
-  Widget _buildOptionWithDropZone(String option) {
-    return Expanded(
-        child: DragTarget(builder: (context, candidateOption, rejectedOption) {
-      return ColoredBox(color: AppTheme.colorScheme.secondary);
-    }));
+  List<Widget> _transformAttempt(){
+    List<Widget> attempts = [];
+    attempts = _selectedOptions.map((String e) => _attempt(e)).toList();
+    return attempts;
   }
 
   Widget _displayButtonsAndInfo(BuildContext context, int level, int attempt) {
@@ -116,49 +145,37 @@ class _ChallengePageState extends State<ChallengePage> {
     );
   }
 
+  Widget _buildChallenge(BuildContext context,List<String> solution,List<String>options){
+      return Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [_displayChallenge(context, solution),_displayOptions(context, options)],
+        ),
+      );
+  }
+
   Widget _displayOptions(BuildContext context, List<String> options) {
-        return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: options.length,
-            itemBuilder: (context, index) {
-              return Center(
-                  child: LongPressDraggable<String>(
-                      data: options[index],
-                      feedback: Container(
-                          height: 70,
-                          width: 70,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              color: AppTheme.colorScheme.primary),
-                          alignment: Alignment.center,
-                          child: FittedBox(
-                              fit: BoxFit.contain,
-                              child: Text(options[index],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black)))),
-                      childWhenDragging: Container(
-                          height: 80,
-                          width: 80,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              color: AppTheme.colorScheme.tertiary),
-                          alignment: Alignment.center,
-                          child: FittedBox(
-                              fit: BoxFit.contain,
-                              child: Text(options[index]))),
-                      child: Container(
-                          height: 80,
-                          width: 80,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              color: AppTheme.colorScheme.secondaryContainer),
-                          alignment: Alignment.center,
-                          child: FittedBox(
-                              fit: BoxFit.contain,
-                              child: Text(options[index],
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold))))));
-            });
+    return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: options.length,
+        itemBuilder: (context, index) {
+          return GestureDetector(
+            child: Container(
+              color: AppTheme.colorScheme.tertiary,
+              child: Text(options[index],style: TextStyle(color: AppTheme.colorScheme.onTertiary))
+            ),
+          onTap:() {
+            _onTappedAdd(options[index]);
+          },
+          );
+        });
+  }
+
+  void _onTappedAdd(String data){
+    setState(() {
+      _selectedOptions.add(data);
+    });
   }
 }
+
