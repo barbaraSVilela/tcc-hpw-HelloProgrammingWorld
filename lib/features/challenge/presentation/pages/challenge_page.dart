@@ -30,14 +30,7 @@ class _ChallengePageState extends State<ChallengePage> {
       bloc: _bloc,
       builder: (context, state) {
         if (state is Loading) {
-          return const Padding(
-              padding: EdgeInsets.all(100),
-              child: Column(
-                children: [
-                  Text("Desafio Carregando"),
-                  CircularProgressIndicator()
-                ],
-              ));
+          return const _LoadingChallenge();
         } else if (state is Loaded) {
           Challenge challenge = state.challenge;
           return Column(
@@ -55,12 +48,7 @@ class _ChallengePageState extends State<ChallengePage> {
             ],
           );
         } else {
-          return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                "Error loading challenge",
-                style: TextStyle(color: AppTheme.colorScheme.error),
-              ));
+          return const _FailedLoad();
         }
       },
     ));
@@ -179,5 +167,35 @@ class _ChallengePageState extends State<ChallengePage> {
     setState(() {
       _selectedOptions.add(data);
     });
+  }
+}
+
+class _LoadingChallenge extends StatelessWidget {
+  const _LoadingChallenge();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Desafio Carregando"),
+        SizedBox(height: 20),
+        CircularProgressIndicator(),
+      ],
+    );
+  }
+}
+
+class _FailedLoad extends StatelessWidget {
+  const _FailedLoad();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Text(
+          "Erro ao carregar o desafio.",
+          style: TextStyle(color: AppTheme.colorScheme.error),
+        ));
   }
 }
