@@ -33,19 +33,74 @@ class _ChallengePageState extends State<ChallengePage> {
           return const _LoadingChallenge();
         } else if (state is Loaded) {
           Challenge challenge = state.challenge;
-          return Column(
-            children: [
-              Expanded(
-                  flex: 7,
-                  child: _displayChallengePrompt(context, challenge.prompt)),
-              Expanded(
-                  flex: 2,
-                  child: _displayButtonsAndInfo(context, challenge.level, 1)),
-              Expanded(
-                  flex: 5,
-                  child: _buildChallenge(
-                      context, challenge.solution, challenge.options)),
-            ],
+          // return Column(
+          //   children: [
+          //     Expanded(
+          //         flex: 7,
+          //         child: _displayChallengePrompt(context, challenge.prompt)),
+          //     Expanded(
+          //         flex: 2,
+          //         child: _displayButtonsAndInfo(context, challenge.level, 1)),
+          //     Expanded(
+          //         flex: 5,
+          //         child: _buildChallenge(
+          //             context, challenge.solution, challenge.options)),
+          //   ],
+          // );
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          "Nível ${state.challenge.level}",
+                          style: AppTheme.themeData.textTheme.titleSmall!
+                              .copyWith(color: AppTheme.colorScheme.secondary),
+                        ),
+                        Text(
+                          "Tentativa 1",
+                          style: AppTheme.themeData.textTheme.titleSmall!
+                              .copyWith(color: AppTheme.colorScheme.secondary),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppTheme.colorScheme.primary,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Text(
+                          state.challenge.prompt,
+                          textAlign: TextAlign.center,
+                          style:
+                              AppTheme.themeData.textTheme.titleLarge!.copyWith(
+                            color: AppTheme.colorScheme.primaryContainer,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Wrap(
+                      direction: Axis.horizontal,
+                      children: List.generate(
+                        state.challenge.options.length,
+                        (index) => _PillContainer(
+                          text: state.challenge.options[index],
+                        ),
+                      ),
+                      // children: [_PillContainer(text: 'test')],
+                    ),
+                    const Divider(thickness: 2),
+                  ],
+                ),
+              ),
+            ),
           );
         } else {
           return const _FailedLoad();
@@ -167,6 +222,27 @@ class _ChallengePageState extends State<ChallengePage> {
     setState(() {
       _selectedOptions.add(data);
     });
+  }
+}
+
+class _PillContainer extends StatelessWidget {
+  const _PillContainer({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: AppTheme.colorScheme.primaryContainer,
+      ),
+      child: Text(
+        text,
+        style: AppTheme.themeData.textTheme.labelLarge,
+      ),
+    );
   }
 }
 
