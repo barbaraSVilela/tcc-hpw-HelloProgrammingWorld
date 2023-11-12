@@ -31,20 +31,6 @@ class _ChallengePageState extends State<ChallengePage> {
         if (state is Loading) {
           return const _LoadingChallenge();
         } else if (state is Loaded) {
-          // return Column(
-          //   children: [
-          //     Expanded(
-          //         flex: 7,
-          //         child: _displayChallengePrompt(context, challenge.prompt)),
-          //     Expanded(
-          //         flex: 2,
-          //         child: _displayButtonsAndInfo(context, challenge.level, 1)),
-          //     Expanded(
-          //         flex: 5,
-          //         child: _buildChallenge(
-          //             context, challenge.solution, challenge.options)),
-          //   ],
-          // );
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -100,15 +86,16 @@ class _ChallengePageState extends State<ChallengePage> {
                             runSpacing: 10,
                             direction: Axis.horizontal,
                             children: List.generate(
-                              state.challenge.options.length,
+                              state.selectedSolution.length,
                               (index) => _PillContainer(
-                                text: state.challenge.options[index],
+                                text: state.selectedSolution[index],
                                 backgroundColor:
                                     AppTheme.colorScheme.primaryContainer,
                                 textColor: Colors.black,
+                                onTap: () =>
+                                    _bloc.add(OptionRemovedFromSolution(index)),
                               ),
                             ),
-                            // children: [_PillContainer(text: 'test')],
                           ),
                           const Spacer(),
                           const SizedBox(height: 20),
@@ -134,16 +121,23 @@ class _ChallengePageState extends State<ChallengePage> {
                             runSpacing: 10,
                             direction: Axis.horizontal,
                             children: List.generate(
-                              state.challenge.options.length,
+                              state.availableOptions.length,
                               (index) {
-                                return _PillContainer(
-                                  text: state.challenge.options[index],
-                                  backgroundColor: _calculateColor(index),
-                                  textColor: Colors.black,
-                                );
+                                if (state.availableOptions[index] == null ||
+                                    state.availableOptions[index]!.isEmpty) {
+                                  //Display nothing
+                                  return const SizedBox.shrink();
+                                } else {
+                                  return _PillContainer(
+                                    text: state.availableOptions[index]!,
+                                    backgroundColor: _calculateColor(index),
+                                    textColor: Colors.black,
+                                    onTap: () =>
+                                        _bloc.add(OptionSelected(index)),
+                                  );
+                                }
                               },
                             ),
-                            // children: [_PillContainer(text: 'test')],
                           ),
                           const Spacer(),
                         ],
@@ -191,6 +185,9 @@ class _PillContainer extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        constraints: const BoxConstraints(
+          minWidth: 50,
+        ),
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
@@ -198,8 +195,10 @@ class _PillContainer extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: AppTheme.themeData.textTheme.labelLarge!
-              .copyWith(color: textColor),
+          textAlign: TextAlign.center,
+          style: AppTheme.themeData.textTheme.labelLarge!.copyWith(
+            color: textColor,
+          ),
         ),
       ),
     );
