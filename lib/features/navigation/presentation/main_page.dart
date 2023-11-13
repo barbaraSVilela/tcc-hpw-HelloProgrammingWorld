@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
 import 'package:tcc_hpw_hello_programming_world/features/challenge/presentation/pages/challenge_page.dart';
+import 'package:tcc_hpw_hello_programming_world/features/world/presentation/pages/world_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -13,7 +14,7 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 1;
 
   static final List<Widget> _widgetOptions = <Widget>[
-    Container(),
+    const WorldPage(),
     const ChallengePage(),
     Container(),
   ];
