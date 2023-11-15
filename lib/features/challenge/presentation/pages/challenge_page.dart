@@ -30,7 +30,10 @@ class _ChallengePageState extends State<ChallengePage> {
       bloc: _bloc,
       builder: (context, state) {
         if (state is Completed) {
-          return const _CompletedChallenge();
+          return _CompletedChallenge(
+            level: state.currentLevel,
+            streak: state.currentStreak,
+          );
         } else if (state is NoMoreAttempts) {
           return const _OutOfAttempts();
         } else if (state is Loading) {
@@ -310,7 +313,10 @@ class _FailedLoad extends StatelessWidget {
 }
 
 class _CompletedChallenge extends StatelessWidget {
-  const _CompletedChallenge();
+  const _CompletedChallenge({required this.level, required this.streak});
+
+  final int level;
+  final int streak;
 
   @override
   Widget build(BuildContext context) {
@@ -331,6 +337,20 @@ class _CompletedChallenge extends StatelessWidget {
                 "Parabéns! Você concluiu o desafio de hoje!",
                 style: AppTheme.themeData.textTheme.titleLarge!
                     .copyWith(color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                "Você agora está no nível $level.",
+                style: AppTheme.themeData.textTheme.titleMedium!.copyWith(
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                "Sua sequência atual é de $streak dias.",
+                style: AppTheme.themeData.textTheme.titleMedium!.copyWith(
+                  color: Colors.white,
+                ),
                 textAlign: TextAlign.center,
               ),
               Text(

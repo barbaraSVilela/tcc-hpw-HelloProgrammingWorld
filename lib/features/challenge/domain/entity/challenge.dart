@@ -14,6 +14,6 @@ class Challenge with _$Challenge {
     @Default([]) List<String> options,
   }) = _Challenge;
 
-factory Challenge.fromJson(Map<String, Object?> json) =>
+  factory Challenge.fromJson(Map<String, Object?> json) =>
       _$ChallengeFromJson(json);
 }

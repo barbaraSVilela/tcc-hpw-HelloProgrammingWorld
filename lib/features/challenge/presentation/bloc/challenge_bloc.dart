@@ -6,6 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tcc_hpw_hello_programming_world/features/challenge/data/repository/challenge_repository.dart';
 import 'package:tcc_hpw_hello_programming_world/features/challenge/domain/entity/challenge.dart';
+import 'package:tcc_hpw_hello_programming_world/features/user/data/repository/user_repository.dart';
 
 part 'challenge_event.dart';
 part 'challenge_state.dart';
@@ -30,13 +31,24 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState>
       try {
         var challenge =
             await GetIt.I<ChallengeRepository>().getDailyChallenge();
-        emit(
-          ChallengeState.loaded(
-            attemptsLeft: attempts,
-            challenge: challenge,
-            availableOptions: List.from(challenge.options),
-          ),
-        );
+        var currentUser = await GetIt.I<UserRepository>().getUser();
+        var now = DateTime.now().toUtc();
+        var today = DateTime.utc(now.year, now.month, now.day);
+        if (currentUser.solvedChallenges.containsKey(today)) {
+          emit(ChallengeState.completed(
+              currentStreak: currentUser.streak,
+              currentLevel: currentUser.level));
+        } else if (currentUser.failedChallenges.containsKey(today)) {
+          emit(const ChallengeState.noMoreAttempts());
+        } else {
+          emit(
+            ChallengeState.loaded(
+              attemptsLeft: attempts,
+              challenge: challenge,
+              availableOptions: List.from(challenge.options),
+            ),
+          );
+        }
       } catch (_) {
         emit(const ChallengeState.errorLoading());
       }
@@ -79,18 +91,27 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState>
     }
   }
 
-  FutureOr<void> _onSubmitSolution(
-      SubmitSolution event, Emitter<ChallengeState> emit) {
+  Future<FutureOr<void>> _onSubmitSolution(
+      SubmitSolution event, Emitter<ChallengeState> emit) async {
     if (state is Loaded) {
       var loadedState = state as Loaded;
       var isCorrect = const ListEquality()
           .equals(loadedState.challenge.solution, loadedState.selectedSolution);
+
+      emit(const ChallengeState.loading());
+      var getUpdatedUser =
+          GetIt.I<ChallengeRepository>().solveDailyChallenge(isCorrect);
       if (isCorrect) {
         emitPresentation(const ChallengeEvent.attemptSuccessful());
-        emit(const ChallengeState.completed());
+        var updatedUser = await getUpdatedUser;
+        emit(ChallengeState.completed(
+          currentLevel: updatedUser.level,
+          currentStreak: updatedUser.streak,
+        ));
       } else {
         attempts--;
         emitPresentation(ChallengeEvent.attemptFailed(attemptsLeft: attempts));
+        await getUpdatedUser;
         if (attempts <= 0) {
           emit(const ChallengeState.noMoreAttempts());
         } else {

@@ -10,6 +10,9 @@ class ChallengeState with _$ChallengeState {
     required int attemptsLeft,
   }) = Loaded;
   const factory ChallengeState.errorLoading() = ErrorLoading;
-  const factory ChallengeState.completed() = Completed;
+  const factory ChallengeState.completed({
+    required int currentStreak,
+    required int currentLevel,
+  }) = Completed;
   const factory ChallengeState.noMoreAttempts() = NoMoreAttempts;
 }
