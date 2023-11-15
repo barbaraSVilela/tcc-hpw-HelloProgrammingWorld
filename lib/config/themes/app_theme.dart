@@ -83,11 +83,11 @@ class AppTheme {
         fontFamily: GoogleFonts.bitter().fontFamily,
       ),
       titleMedium: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.w500,
-          letterSpacing: 0.15,
-          fontFamily: GoogleFonts.bitter().fontFamily,
-          height: 24.0),
+        fontSize: 16.0,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0.15,
+        fontFamily: GoogleFonts.bitter().fontFamily,
+      ),
       titleSmall: TextStyle(
         fontSize: 14.0,
         fontWeight: FontWeight.w500,

@@ -314,32 +314,40 @@ class _CompletedChallenge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.colorScheme.primary,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            "Parabéns! Você concluiu o desafio de hoje!",
-            style: AppTheme.themeData.textTheme.titleLarge!
-                .copyWith(color: Colors.white),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 100),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.colorScheme.primary,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Parabéns! Você concluiu o desafio de hoje!",
+                style: AppTheme.themeData.textTheme.titleLarge!
+                    .copyWith(color: Colors.white),
+                textAlign: TextAlign.center,
+              ),
+              Text(
+                "Ajude outros estudantes dando dicas de estudo sobre este desafio.",
+                style: AppTheme.themeData.textTheme.titleMedium!.copyWith(
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              _PillContainer(
+                text: 'Ajudar!',
+                backgroundColor: AppTheme.colorScheme.primaryContainer,
+                textColor: Colors.black,
+              )
+            ],
           ),
-          Text(
-            "Ajude outros estudantes dando dicas de estudo sobre este desafio.",
-            style: AppTheme.themeData.textTheme.titleMedium!.copyWith(
-              color: Colors.white,
-            ),
-          ),
-          _PillContainer(
-            text: 'Ajudar!',
-            backgroundColor: AppTheme.colorScheme.primaryContainer,
-            textColor: Colors.black,
-          )
-        ],
+        ),
       ),
     );
   }
@@ -357,30 +365,33 @@ class _OutOfAttempts extends StatelessWidget {
           color: AppTheme.colorScheme.primary,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Que pena! Infelizmente, você não conseguiu solucionar o desafio de hoje. Volte amanhã!",
-              style: AppTheme.themeData.textTheme.titleLarge!.copyWith(
-                color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Que pena! Infelizmente, você não conseguiu solucionar o desafio de hoje. Volte amanhã!",
+                style: AppTheme.themeData.textTheme.titleLarge!.copyWith(
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              "Veja dicas de estudo pertinentes ao desafio hoje.",
-              style: AppTheme.themeData.textTheme.titleMedium!.copyWith(
-                color: Colors.white,
+              Text(
+                "Veja dicas de estudo pertinentes ao desafio hoje.",
+                style: AppTheme.themeData.textTheme.titleMedium!.copyWith(
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            _PillContainer(
-              text: 'Quero ajuda!',
-              backgroundColor: AppTheme.colorScheme.primaryContainer,
-              textColor: Colors.black,
-            )
-          ],
+              _PillContainer(
+                text: 'Quero ajuda!',
+                backgroundColor: AppTheme.colorScheme.primaryContainer,
+                textColor: Colors.black,
+              )
+            ],
+          ),
         ),
       ),
     );
