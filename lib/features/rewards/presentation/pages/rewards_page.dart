@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
 import 'package:tcc_hpw_hello_programming_world/features/rewards/domain/entities/reward.dart';
 import 'package:tcc_hpw_hello_programming_world/features/rewards/presentation/bloc/reward_bloc.dart';
+import 'package:tcc_hpw_hello_programming_world/features/user/presentation/bloc/user_bloc.dart' as userBloc;
 
 class RewardsPage extends StatefulWidget {
   const RewardsPage({super.key});
@@ -14,10 +15,13 @@ class RewardsPage extends StatefulWidget {
 
 class _RewardsPageState extends State<RewardsPage> {
   late RewardBloc _bloc;
+  late userBloc.UserBloc _userBloc;
   @override
   void initState() {
     _bloc = GetIt.I<RewardBloc>();
     _bloc.add(const RewardEvent.loadRewards());
+    _userBloc = GetIt.I<userBloc.UserBloc>();
+    _userBloc.add(const userBloc.UserEvent.loadUser());
     super.initState();
   }
 
@@ -27,7 +31,7 @@ class _RewardsPageState extends State<RewardsPage> {
         bloc: _bloc,
         builder: (context, state) {
           if (state is Loading) {
-            return Scaffold(body:Center(child: _LoadingRewards()));
+            return Scaffold(body:Center(child: _Loading()));
           } else if (state is Loaded) {
             return Scaffold(
                 appBar: AppBar(
@@ -36,7 +40,10 @@ class _RewardsPageState extends State<RewardsPage> {
                   centerTitle: true,
                   title: Text("LOJA"),
                   leading: BackButton(onPressed: () => Navigator.pop(context)),
-                  actions: [const Icon(Icons.add_business_outlined)],
+                  actions: [FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: _userCoins(context),
+                  ),const Icon(Icons.add_business_outlined)],
                 ),
                 body: ListView.builder(
                     itemCount: state.rewards.length,
@@ -62,17 +69,38 @@ class _RewardsPageState extends State<RewardsPage> {
           }
         });
   }
+Widget _userCoins(BuildContext context){
+return BlocBuilder<userBloc.UserBloc,userBloc.UserState>(
+  bloc: _userBloc,
+    builder: (context,state){
+      if(state is userBloc.Loading){
+        return  Text("Informação do usuário carregando");
+      }else if(state is userBloc.Loaded){
+            return Text("punched cards: " + state.user.coins.toString());
+      }else{
+        return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              "Erro ao carregar informação do usuário.",
+              style: TextStyle(color: AppTheme.colorScheme.error),
+            ));
+      }
+    });
+
 }
 
-class _LoadingRewards extends StatelessWidget {
-  const _LoadingRewards();
+
+}
+
+class _Loading extends StatelessWidget {
+  const _Loading();
 
   @override
   Widget build(BuildContext context) {
     return const Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Recompensas Carregando"),
+        const Text("Recompensas Carregando"),
         SizedBox(height: 20),
         CircularProgressIndicator(),
       ],
@@ -93,4 +121,5 @@ class _FailedLoad extends StatelessWidget {
         ));
   }
 }
+
 
