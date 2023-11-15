@@ -1,3 +1,4 @@
+import 'package:bloc_presentation/bloc_presentation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -28,119 +29,145 @@ class _ChallengePageState extends State<ChallengePage> {
         child: BlocBuilder<ChallengeBloc, ChallengeState>(
       bloc: _bloc,
       builder: (context, state) {
-        if (state is Loading) {
+        if (state is Completed) {
+          return const _CompletedChallenge();
+        } else if (state is NoMoreAttempts) {
+          return const _OutOfAttempts();
+        } else if (state is Loading) {
           return const _LoadingChallenge();
         } else if (state is Loaded) {
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: LayoutBuilder(
-                builder: (context, constraints) => SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: IntrinsicHeight(
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 5),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Nível ${state.challenge.level}",
-                                style: AppTheme.themeData.textTheme.titleSmall!
-                                    .copyWith(
-                                        color: AppTheme.colorScheme.secondary),
-                              ),
-                              Text(
-                                "Tentativa 1",
-                                style: AppTheme.themeData.textTheme.titleSmall!
-                                    .copyWith(
-                                        color: AppTheme.colorScheme.secondary),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: AppTheme.colorScheme.primary,
-                              borderRadius: BorderRadius.circular(8),
+          return BlocPresentationListener<ChallengeBloc, ChallengeEvent>(
+            bloc: _bloc,
+            listener: (context, event) {
+              if (event is AttemptSuccessful) {
+                _showSuccessDialog();
+              }
+              if (event is AttemptFailed) {
+                _showFailedDialog(event.attemptsLeft);
+              }
+            },
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: LayoutBuilder(
+                  builder: (context, constraints) => SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: IntrinsicHeight(
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 5),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Nível ${state.challenge.level}",
+                                  style: AppTheme
+                                      .themeData.textTheme.titleSmall!
+                                      .copyWith(
+                                          color:
+                                              AppTheme.colorScheme.secondary),
+                                ),
+                                Text(
+                                  "${state.attemptsLeft} tentativas restantes",
+                                  style: AppTheme
+                                      .themeData.textTheme.titleSmall!
+                                      .copyWith(
+                                          color:
+                                              AppTheme.colorScheme.secondary),
+                                ),
+                              ],
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: Text(
-                                state.challenge.prompt,
-                                textAlign: TextAlign.center,
-                                style: AppTheme.themeData.textTheme.titleLarge!
-                                    .copyWith(
-                                  color: AppTheme.colorScheme.primaryContainer,
+                            const SizedBox(height: 5),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: AppTheme.colorScheme.primary,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Text(
+                                  state.challenge.prompt,
+                                  textAlign: TextAlign.center,
+                                  style: AppTheme
+                                      .themeData.textTheme.titleLarge!
+                                      .copyWith(
+                                    color:
+                                        AppTheme.colorScheme.primaryContainer,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 20),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            direction: Axis.horizontal,
-                            children: List.generate(
-                              state.selectedSolution.length,
-                              (index) => _PillContainer(
-                                text: state.selectedSolution[index],
-                                backgroundColor:
-                                    AppTheme.colorScheme.primaryContainer,
-                                textColor: Colors.black,
-                                onTap: () =>
-                                    _bloc.add(OptionRemovedFromSolution(index)),
+                            const SizedBox(height: 20),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              direction: Axis.horizontal,
+                              children: List.generate(
+                                state.selectedSolution.length,
+                                (index) => _PillContainer(
+                                  text: state.selectedSolution[index],
+                                  backgroundColor:
+                                      AppTheme.colorScheme.primaryContainer,
+                                  textColor: Colors.black,
+                                  onTap: () => _bloc
+                                      .add(OptionRemovedFromSolution(index)),
+                                ),
                               ),
                             ),
-                          ),
-                          const Spacer(),
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _PillContainer(
-                                text: 'Desistir',
-                                backgroundColor: AppTheme.colorScheme.secondary,
-                                textColor: Colors.white,
-                              ),
-                              _PillContainer(
-                                text: 'Submeter',
-                                backgroundColor: AppTheme.colorScheme.primary,
-                                textColor: Colors.white,
-                              )
-                            ],
-                          ),
-                          const Divider(thickness: 2),
-                          const SizedBox(height: 20),
-                          Wrap(
-                            spacing: 10,
-                            runSpacing: 10,
-                            direction: Axis.horizontal,
-                            children: List.generate(
-                              state.availableOptions.length,
-                              (index) {
-                                if (state.availableOptions[index] == null ||
-                                    state.availableOptions[index]!.isEmpty) {
-                                  //Display nothing
-                                  return const SizedBox.shrink();
-                                } else {
-                                  return _PillContainer(
-                                    text: state.availableOptions[index]!,
-                                    backgroundColor: _calculateColor(index),
-                                    textColor: Colors.black,
-                                    onTap: () =>
-                                        _bloc.add(OptionSelected(index)),
-                                  );
-                                }
-                              },
+                            const Spacer(),
+                            const SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                _PillContainer(
+                                  text: 'Desistir',
+                                  backgroundColor:
+                                      AppTheme.colorScheme.secondary,
+                                  textColor: Colors.white,
+                                  onTap: () =>
+                                      _bloc.add(const ChallengeEvent.giveUp()),
+                                ),
+                                _PillContainer(
+                                  text: 'Submeter',
+                                  backgroundColor: AppTheme.colorScheme.primary,
+                                  textColor: Colors.white,
+                                  onTap: () => _bloc.add(
+                                      const ChallengeEvent.submitSolution()),
+                                )
+                              ],
                             ),
-                          ),
-                          const Spacer(),
-                        ],
+                            const Divider(thickness: 2),
+                            const SizedBox(height: 20),
+                            Wrap(
+                              spacing: 10,
+                              runSpacing: 10,
+                              direction: Axis.horizontal,
+                              children: List.generate(
+                                state.availableOptions.length,
+                                (index) {
+                                  if (state.availableOptions[index] == null ||
+                                      state.availableOptions[index]!.isEmpty) {
+                                    //Display nothing
+                                    return const SizedBox.shrink();
+                                  } else {
+                                    return _PillContainer(
+                                      text: state.availableOptions[index]!,
+                                      backgroundColor: _calculateColor(index),
+                                      textColor: Colors.black,
+                                      onTap: () =>
+                                          _bloc.add(OptionSelected(index)),
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -164,6 +191,53 @@ class _ChallengePageState extends State<ChallengePage> {
       return HpwColors.yellow;
     }
     return AppTheme.colorScheme.primaryContainer;
+  }
+
+  Future<void> _showSuccessDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Successo!'),
+          content: const SingleChildScrollView(
+            child: Text('Sua solução está correta!'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showFailedDialog(int attemptsLeft) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Erro!'),
+          content: SingleChildScrollView(
+            child: Text(
+                'Sua solução está incorreta. Você tem $attemptsLeft restantes.'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -232,5 +306,83 @@ class _FailedLoad extends StatelessWidget {
           "Erro ao carregar o desafio.",
           style: TextStyle(color: AppTheme.colorScheme.error),
         ));
+  }
+}
+
+class _CompletedChallenge extends StatelessWidget {
+  const _CompletedChallenge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "Parabéns! Você concluiu o desafio de hoje!",
+            style: AppTheme.themeData.textTheme.titleLarge!
+                .copyWith(color: Colors.white),
+          ),
+          Text(
+            "Ajude outros estudantes dando dicas de estudo sobre este desafio.",
+            style: AppTheme.themeData.textTheme.titleMedium!.copyWith(
+              color: Colors.white,
+            ),
+          ),
+          _PillContainer(
+            text: 'Ajudar!',
+            backgroundColor: AppTheme.colorScheme.primaryContainer,
+            textColor: Colors.black,
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _OutOfAttempts extends StatelessWidget {
+  const _OutOfAttempts();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 100),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.colorScheme.primary,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Que pena! Infelizmente, você não conseguiu solucionar o desafio de hoje. Volte amanhã!",
+              style: AppTheme.themeData.textTheme.titleLarge!.copyWith(
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              "Veja dicas de estudo pertinentes ao desafio hoje.",
+              style: AppTheme.themeData.textTheme.titleMedium!.copyWith(
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            _PillContainer(
+              text: 'Quero ajuda!',
+              backgroundColor: AppTheme.colorScheme.primaryContainer,
+              textColor: Colors.black,
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

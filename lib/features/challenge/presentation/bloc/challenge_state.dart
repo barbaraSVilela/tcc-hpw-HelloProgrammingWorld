@@ -7,6 +7,9 @@ class ChallengeState with _$ChallengeState {
     required Challenge challenge,
     @Default([]) List<String> selectedSolution,
     @Default([]) List<String?> availableOptions,
+    required int attemptsLeft,
   }) = Loaded;
   const factory ChallengeState.errorLoading() = ErrorLoading;
+  const factory ChallengeState.completed() = Completed;
+  const factory ChallengeState.noMoreAttempts() = NoMoreAttempts;
 }

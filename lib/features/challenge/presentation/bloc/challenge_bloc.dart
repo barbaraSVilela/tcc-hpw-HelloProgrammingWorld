@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:bloc_presentation/bloc_presentation.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
@@ -9,12 +11,17 @@ part 'challenge_event.dart';
 part 'challenge_state.dart';
 part 'challenge_bloc.freezed.dart';
 
-class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
+class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState>
+    with BlocPresentationMixin<ChallengeState, ChallengeEvent> {
   ChallengeBloc() : super(const ChallengeState.loading()) {
     on<LoadChallenge>(_onLoadChallenge);
     on<OptionSelected>(_onOptionSelected);
     on<OptionRemovedFromSolution>(_onOptionRemovedFromSolution);
+    on<SubmitSolution>(_onSubmitSolution);
+    on<GiveUp>(_onGiveUp);
   }
+
+  int attempts = 3;
 
   Future<FutureOr<void>> _onLoadChallenge(
       LoadChallenge event, Emitter<ChallengeState> emit) async {
@@ -25,6 +32,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
             await GetIt.I<ChallengeRepository>().getDailyChallenge();
         emit(
           ChallengeState.loaded(
+            attemptsLeft: attempts,
             challenge: challenge,
             availableOptions: List.from(challenge.options),
           ),
@@ -68,6 +76,38 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState> {
           availableOptions: updatedOptions,
         ),
       );
+    }
+  }
+
+  FutureOr<void> _onSubmitSolution(
+      SubmitSolution event, Emitter<ChallengeState> emit) {
+    if (state is Loaded) {
+      var loadedState = state as Loaded;
+      var isCorrect = const ListEquality()
+          .equals(loadedState.challenge.solution, loadedState.selectedSolution);
+      if (isCorrect) {
+        emitPresentation(const ChallengeEvent.attemptSuccessful());
+        emit(const ChallengeState.completed());
+      } else {
+        attempts--;
+        emitPresentation(ChallengeEvent.attemptFailed(attemptsLeft: attempts));
+        if (attempts <= 0) {
+          emit(const ChallengeState.noMoreAttempts());
+        } else {
+          emit(loadedState.copyWith(attemptsLeft: attempts));
+        }
+      }
+    }
+  }
+
+  FutureOr<void> _onGiveUp(GiveUp event, Emitter<ChallengeState> emit) {
+    if (state is Loaded) {
+      var loadedState = state as Loaded;
+      emit(loadedState.copyWith(
+        availableOptions: List.from(loadedState.availableOptions)
+          ..addAll(loadedState.selectedSolution),
+        selectedSolution: [],
+      ));
     }
   }
 }
