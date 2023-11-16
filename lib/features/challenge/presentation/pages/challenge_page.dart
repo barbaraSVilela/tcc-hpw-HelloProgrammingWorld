@@ -2,8 +2,11 @@ import 'package:bloc_presentation/bloc_presentation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:tcc_hpw_hello_programming_world/components/pill_container.dart';
 import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
+import 'package:tcc_hpw_hello_programming_world/features/challenge/domain/entity/challenge.dart';
 import 'package:tcc_hpw_hello_programming_world/features/challenge/presentation/bloc/challenge_bloc.dart';
+import 'package:tcc_hpw_hello_programming_world/features/navigation/navigation_routes.dart';
 import 'package:tcc_hpw_hello_programming_world/foundation/hpw_colors.dart';
 
 class ChallengePage extends StatefulWidget {
@@ -33,6 +36,7 @@ class _ChallengePageState extends State<ChallengePage> {
           return _CompletedChallenge(
             level: state.currentLevel,
             streak: state.currentStreak,
+            challenge: state.challenge,
           );
         } else if (state is NoMoreAttempts) {
           return const _OutOfAttempts();
@@ -111,7 +115,7 @@ class _ChallengePageState extends State<ChallengePage> {
                               direction: Axis.horizontal,
                               children: List.generate(
                                 state.selectedSolution.length,
-                                (index) => _PillContainer(
+                                (index) => PillContainer(
                                   text: state.selectedSolution[index],
                                   backgroundColor:
                                       AppTheme.colorScheme.primaryContainer,
@@ -126,7 +130,7 @@ class _ChallengePageState extends State<ChallengePage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                _PillContainer(
+                                PillContainer(
                                   text: 'Desistir',
                                   backgroundColor:
                                       AppTheme.colorScheme.secondary,
@@ -134,7 +138,7 @@ class _ChallengePageState extends State<ChallengePage> {
                                   onTap: () =>
                                       _bloc.add(const ChallengeEvent.giveUp()),
                                 ),
-                                _PillContainer(
+                                PillContainer(
                                   text: 'Submeter',
                                   backgroundColor: AppTheme.colorScheme.primary,
                                   textColor: Colors.white,
@@ -157,7 +161,7 @@ class _ChallengePageState extends State<ChallengePage> {
                                     //Display nothing
                                     return const SizedBox.shrink();
                                   } else {
-                                    return _PillContainer(
+                                    return PillContainer(
                                       text: state.availableOptions[index]!,
                                       backgroundColor: _calculateColor(index),
                                       textColor: Colors.black,
@@ -244,44 +248,6 @@ class _ChallengePageState extends State<ChallengePage> {
   }
 }
 
-class _PillContainer extends StatelessWidget {
-  const _PillContainer({
-    required this.text,
-    this.onTap,
-    required this.backgroundColor,
-    required this.textColor,
-  });
-
-  final String text;
-  final VoidCallback? onTap;
-  final Color backgroundColor;
-  final Color textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        constraints: const BoxConstraints(
-          minWidth: 50,
-        ),
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: backgroundColor,
-        ),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: AppTheme.themeData.textTheme.labelLarge!.copyWith(
-            color: textColor,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _LoadingChallenge extends StatelessWidget {
   const _LoadingChallenge();
 
@@ -313,10 +279,15 @@ class _FailedLoad extends StatelessWidget {
 }
 
 class _CompletedChallenge extends StatelessWidget {
-  const _CompletedChallenge({required this.level, required this.streak});
+  const _CompletedChallenge({
+    required this.level,
+    required this.streak,
+    required this.challenge,
+  });
 
   final int level;
   final int streak;
+  final Challenge challenge;
 
   @override
   Widget build(BuildContext context) {
@@ -360,10 +331,12 @@ class _CompletedChallenge extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              _PillContainer(
+              PillContainer(
                 text: 'Ajudar!',
                 backgroundColor: AppTheme.colorScheme.primaryContainer,
                 textColor: Colors.black,
+                onTap: () => Navigator.push(
+                    context, NavigationRoutes.giveHelpRoute(challenge)),
               )
             ],
           ),
@@ -405,7 +378,7 @@ class _OutOfAttempts extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              _PillContainer(
+              PillContainer(
                 text: 'Quero ajuda!',
                 backgroundColor: AppTheme.colorScheme.primaryContainer,
                 textColor: Colors.black,

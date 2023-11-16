@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_hpw_hello_programming_world/features/challenge/domain/entity/challenge.dart';
 import 'package:tcc_hpw_hello_programming_world/features/challenge/presentation/pages/challenge_page.dart';
+import 'package:tcc_hpw_hello_programming_world/features/give_help/presentation/give_help_page.dart';
 import 'package:tcc_hpw_hello_programming_world/features/navigation/presentation/main_page.dart';
 import 'package:tcc_hpw_hello_programming_world/features/rewards/presentation/pages/rewards_page.dart';
 
@@ -13,7 +15,12 @@ class NavigationRoutes {
         builder: (context) => const MainPage(),
       );
 
-  static MaterialPageRoute Function() rewardsPageRoute = () => MaterialPageRoute(
-      builder: (context) => RewardsPage()
-  );
+  static MaterialPageRoute Function() rewardsPageRoute =
+      () => MaterialPageRoute(builder: (context) => const RewardsPage());
+
+  static MaterialPageRoute Function(Challenge challenge) giveHelpRoute =
+      (Challenge challenge) => MaterialPageRoute(
+          builder: (context) => GiveHelpPage(
+                challenge: challenge,
+              ));
 }

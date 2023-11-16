@@ -36,8 +36,10 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState>
         var today = DateTime.utc(now.year, now.month, now.day);
         if (currentUser.solvedChallenges.containsKey(today)) {
           emit(ChallengeState.completed(
-              currentStreak: currentUser.streak,
-              currentLevel: currentUser.level));
+            currentStreak: currentUser.streak,
+            currentLevel: currentUser.level,
+            challenge: challenge,
+          ));
         } else if (currentUser.failedChallenges.containsKey(today)) {
           emit(const ChallengeState.noMoreAttempts());
         } else {
@@ -107,6 +109,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState>
         emit(ChallengeState.completed(
           currentLevel: updatedUser.level,
           currentStreak: updatedUser.streak,
+          challenge: loadedState.challenge,
         ));
       } else {
         attempts--;
