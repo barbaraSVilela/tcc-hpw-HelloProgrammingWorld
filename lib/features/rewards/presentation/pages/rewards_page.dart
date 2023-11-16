@@ -32,14 +32,14 @@ class _RewardsPageState extends State<RewardsPage> {
         bloc: _bloc,
         builder: (context, state) {
           if (state is Loading) {
-            return Scaffold(body: Center(child: _Loading()));
+            return const Scaffold(body:Center(child: _Loading()));
           } else if (state is Loaded) {
             return Scaffold(
                 appBar: AppBar(
                   backgroundColor: AppTheme.colorScheme.surface,
                   foregroundColor: AppTheme.colorScheme.onSurface,
                   centerTitle: true,
-                  title: Text("LOJA"),
+                  title: const Text("LOJA"),
                   leading: BackButton(onPressed: () => Navigator.pop(context)),
                   actions: [
                     FittedBox(
@@ -76,11 +76,11 @@ class _RewardsPageState extends State<RewardsPage> {
                                         AppTheme.colorScheme.secondary),
                                 onPressed: () => {},
                                 child: Text(
-                                    "\$" + currentReward.price.toString()))),
+                                    "\$${currentReward.price}"))),
                       );
                     }));
           } else {
-            return Scaffold(body: Center(child: _FailedLoad()));
+            return const Scaffold(body: Center(child: _FailedLoad()));
           }
         });
   }
@@ -92,7 +92,7 @@ class _RewardsPageState extends State<RewardsPage> {
           if (state is userBloc.Loading) {
             return Text("Informação do usuário carregando");
           } else if (state is userBloc.Loaded) {
-            return Text("punched cards: " + state.user.coins.toString());
+            return Text("punched cards: ${state.user.coins}");
           } else {
             return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -113,7 +113,7 @@ class _Loading extends StatelessWidget {
     return const Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Recompensas Carregando"),
+         Text("Recompensas Carregando"),
         SizedBox(height: 20),
         CircularProgressIndicator(),
       ],

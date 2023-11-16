@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
 import 'package:tcc_hpw_hello_programming_world/features/challenge/presentation/pages/challenge_page.dart';
+import 'package:tcc_hpw_hello_programming_world/features/friends/presentation/pages/friends_page.dart';
 import 'package:tcc_hpw_hello_programming_world/features/world/presentation/pages/world_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -16,7 +17,7 @@ class _MainPageState extends State<MainPage> {
   static final List<Widget> _widgetOptions = <Widget>[
     const WorldPage(),
     const ChallengePage(),
-    Container(),
+    const FriendsPage(),
   ];
 
   void _onItemTapped(int index) {
