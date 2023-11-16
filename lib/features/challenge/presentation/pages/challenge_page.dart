@@ -39,7 +39,7 @@ class _ChallengePageState extends State<ChallengePage> {
             challenge: state.challenge,
           );
         } else if (state is NoMoreAttempts) {
-          return const _OutOfAttempts();
+          return _OutOfAttempts(state.challenge);
         } else if (state is Loading) {
           return const _LoadingChallenge();
         } else if (state is Loaded) {
@@ -347,7 +347,8 @@ class _CompletedChallenge extends StatelessWidget {
 }
 
 class _OutOfAttempts extends StatelessWidget {
-  const _OutOfAttempts();
+  const _OutOfAttempts(this.challenge);
+  final Challenge challenge;
 
   @override
   Widget build(BuildContext context) {
@@ -382,6 +383,8 @@ class _OutOfAttempts extends StatelessWidget {
                 text: 'Quero ajuda!',
                 backgroundColor: AppTheme.colorScheme.primaryContainer,
                 textColor: Colors.black,
+                onTap: () => Navigator.push(
+                    context, NavigationRoutes.getHelpRoute(challenge)),
               )
             ],
           ),

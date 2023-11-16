@@ -41,7 +41,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState>
             challenge: challenge,
           ));
         } else if (currentUser.failedChallenges.containsKey(today)) {
-          emit(const ChallengeState.noMoreAttempts());
+          emit(ChallengeState.noMoreAttempts(challenge: challenge));
         } else {
           emit(
             ChallengeState.loaded(
@@ -116,7 +116,7 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState>
         emitPresentation(ChallengeEvent.attemptFailed(attemptsLeft: attempts));
         await getUpdatedUser;
         if (attempts <= 0) {
-          emit(const ChallengeState.noMoreAttempts());
+          emit(ChallengeState.noMoreAttempts(challenge: loadedState.challenge));
         } else {
           emit(loadedState.copyWith(attemptsLeft: attempts));
         }

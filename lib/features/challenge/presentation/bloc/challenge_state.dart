@@ -15,5 +15,6 @@ class ChallengeState with _$ChallengeState {
     required int currentLevel,
     required Challenge challenge,
   }) = Completed;
-  const factory ChallengeState.noMoreAttempts() = NoMoreAttempts;
+  const factory ChallengeState.noMoreAttempts({required Challenge challenge}) =
+      NoMoreAttempts;
 }
