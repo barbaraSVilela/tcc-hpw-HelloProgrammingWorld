@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
+import 'package:tcc_hpw_hello_programming_world/features/authentication/domain/bloc/authentication_bloc.dart';
 import 'package:tcc_hpw_hello_programming_world/features/navigation/navigation_routes.dart';
 import 'package:tcc_hpw_hello_programming_world/features/rewards/domain/entities/reward.dart';
 import 'package:tcc_hpw_hello_programming_world/features/user/presentation/bloc/user_bloc.dart';
@@ -80,7 +81,8 @@ class _WorldPageState extends State<WorldPage> {
                             return ListTile(
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(3),
-                                    side:const BorderSide(color: Colors.black)),
+                                    side:
+                                        const BorderSide(color: Colors.black)),
                                 tileColor:
                                     AppTheme.colorScheme.primaryContainer,
                                 contentPadding: const EdgeInsets.all(10),
@@ -106,22 +108,36 @@ class _WorldPageState extends State<WorldPage> {
 
   Widget _store(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           "Meu Mundo",
           style: AppTheme.themeData.textTheme.titleLarge!
               .copyWith(color: AppTheme.colorScheme.primary),
         ),
+        const Spacer(),
         ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.colorScheme.secondary,
-                foregroundColor: AppTheme.colorScheme.onSecondary,
-                textStyle: AppTheme.themeData.textTheme.labelLarge),
-            onPressed: () async {
-              Navigator.push(context, NavigationRoutes.rewardsPageRoute.call());
-            },
-            child: Text("Loja"))
+          style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.colorScheme.secondary,
+              foregroundColor: AppTheme.colorScheme.onSecondary,
+              textStyle: AppTheme.themeData.textTheme.labelLarge),
+          onPressed: () async {
+            Navigator.of(context).pop();
+            GetIt.I<AuthenticationBloc>()
+                .add(const AuthenticationEvent.signOut());
+          },
+          child: const Text("Sair"),
+        ),
+        const SizedBox(width: 10),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.colorScheme.secondary,
+              foregroundColor: AppTheme.colorScheme.onSecondary,
+              textStyle: AppTheme.themeData.textTheme.labelLarge),
+          onPressed: () async {
+            Navigator.push(context, NavigationRoutes.rewardsPageRoute.call());
+          },
+          child: const Text("Loja"),
+        )
       ],
     );
   }

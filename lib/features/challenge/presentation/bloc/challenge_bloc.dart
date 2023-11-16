@@ -114,8 +114,10 @@ class ChallengeBloc extends Bloc<ChallengeEvent, ChallengeState>
       } else {
         attempts--;
         emitPresentation(ChallengeEvent.attemptFailed(attemptsLeft: attempts));
-        await getUpdatedUser;
         if (attempts <= 0) {
+          try {
+            await getUpdatedUser;
+          } catch (_) {}
           emit(ChallengeState.noMoreAttempts(challenge: loadedState.challenge));
         } else {
           emit(loadedState.copyWith(attemptsLeft: attempts));

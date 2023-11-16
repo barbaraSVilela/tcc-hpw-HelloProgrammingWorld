@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:tcc_hpw_hello_programming_world/components/pill_container.dart';
+import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
 import 'package:tcc_hpw_hello_programming_world/features/authentication/domain/bloc/authentication_bloc.dart';
 import 'package:tcc_hpw_hello_programming_world/features/navigation/navigation_routes.dart';
 
@@ -18,85 +20,63 @@ class _WelcomePageState extends State<WelcomePage> {
   void initState() {
     super.initState();
     _bloc = GetIt.I<AuthenticationBloc>();
+    _bloc.add(const AuthenticationEvent.signIn());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
-        bloc: _bloc,
-        builder: (context, state) {
-          if (state is Authenticated) {
-            return _WelcomeLayout(
-              child: Column(
-                children: [
-                  Text((state).credentials.user.email ?? ''),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      _bloc.add(const SignOut());
-                    },
-                    child: const Text("Log out"),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () async {
-                      Navigator.push(
-                          context, NavigationRoutes.mainPageRoute.call());
-                    },
-                    child: const Text("Learn!"),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return _WelcomeLayout(
-              child: Column(
-                children: [
-                  if (state is ErrorOccurred)
-                    const Text(
-                      'Error signing in.',
-                      style: TextStyle(color: Colors.red),
+    return MultiBlocListener(
+        listeners: [
+          BlocListener<AuthenticationBloc, AuthenticationState>(
+            bloc: _bloc,
+            listenWhen: (previous, current) =>
+                previous is! Authenticated && current is Authenticated,
+            listener: (context, state) =>
+                Navigator.push(context, NavigationRoutes.mainPageRoute.call()),
+          ),
+          BlocListener<AuthenticationBloc, AuthenticationState>(
+            bloc: _bloc,
+            listenWhen: (previous, current) =>
+                previous is Authenticated && current is! Authenticated,
+            listener: (context, state) =>
+                _bloc.add(const AuthenticationEvent.signIn()),
+          ),
+        ],
+        child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            bloc: _bloc,
+            builder: (context, state) {
+              if (state is ErrorOccurred) {
+                return Scaffold(
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.network('https://i.imgur.com/ePW6QE3.png'),
+                        Text(
+                          "Você deve fazer login para continuar",
+                          textAlign: TextAlign.center,
+                          style: AppTheme.themeData.textTheme.titleSmall!
+                              .copyWith(color: AppTheme.colorScheme.secondary),
+                        ),
+                        const SizedBox(height: 10),
+                        PillContainer(
+                          text: 'Login',
+                          backgroundColor: AppTheme.colorScheme.primary,
+                          textColor: Colors.white,
+                          onTap: () =>
+                              _bloc.add(const AuthenticationEvent.signIn()),
+                        )
+                      ],
                     ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      _bloc.add(const SignIn());
-                    },
-                    child: const Text("Log in"),
                   ),
-                ],
-              ),
-            );
-          }
-        });
-  }
-}
-
-class _WelcomeLayout extends StatelessWidget {
-  const _WelcomeLayout({
-    required this.child,
-  });
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text(
-              'Welcome!',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-            const SizedBox(height: 20),
-            child,
-          ],
-        ),
-      ),
-    );
+                );
+              }
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }));
   }
 }
