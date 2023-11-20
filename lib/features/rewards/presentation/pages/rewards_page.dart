@@ -32,7 +32,7 @@ class _RewardsPageState extends State<RewardsPage> {
         bloc: _bloc,
         builder: (context, state) {
           if (state is Loading) {
-            return const Scaffold(body:Center(child: _Loading()));
+            return const Scaffold(body: Center(child: _Loading()));
           } else if (state is Loaded) {
             return Scaffold(
                 appBar: AppBar(
@@ -74,9 +74,12 @@ class _RewardsPageState extends State<RewardsPage> {
                                         AppTheme.colorScheme.onSecondary,
                                     backgroundColor:
                                         AppTheme.colorScheme.secondary),
-                                onPressed: () => {},
-                                child: Text(
-                                    "\$${currentReward.price}"))),
+                                onPressed: () => _bloc.add(
+                                      PurchaseReward(
+                                        rewardId: currentReward.id,
+                                      ),
+                                    ),
+                                child: Text("\$${currentReward.price}"))),
                       );
                     }));
           } else {
@@ -113,7 +116,7 @@ class _Loading extends StatelessWidget {
     return const Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-         Text("Recompensas Carregando"),
+        Text("Recompensas Carregando"),
         SizedBox(height: 20),
         CircularProgressIndicator(),
       ],

@@ -10,10 +10,11 @@ part 'user_event.dart';
 part 'user_state.dart';
 part 'user_bloc.freezed.dart';
 
-
-class UserBloc extends Bloc<UserEvent, UserState> with BlocPresentationMixin<UserState, UserEvent>{
+class UserBloc extends Bloc<UserEvent, UserState>
+    with BlocPresentationMixin<UserState, UserEvent> {
   UserBloc() : super(const UserState.loading()) {
     on<LoadUser>(_onLoadUser);
+    on<UpdateUser>(_onUpdateUser);
   }
 
   Future<FutureOr<void>> _onLoadUser(
@@ -21,13 +22,15 @@ class UserBloc extends Bloc<UserEvent, UserState> with BlocPresentationMixin<Use
     if (state is! Loaded) {
       emit(const UserState.loading());
       try {
-        var user =
-            await GetIt.I<UserRepository>().getUser();
+        var user = await GetIt.I<UserRepository>().getUser();
         emit(UserState.loaded(user));
       } catch (_) {
         emit(const UserState.errorLoading());
       }
     }
   }
-}
 
+  FutureOr<void> _onUpdateUser(UpdateUser event, Emitter<UserState> emit) {
+    emit(UserState.loaded(event.user));
+  }
+}

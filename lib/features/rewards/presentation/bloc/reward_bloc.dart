@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tcc_hpw_hello_programming_world/features/rewards/data/repository/reward_repository.dart';
 import 'package:tcc_hpw_hello_programming_world/features/rewards/domain/entities/reward.dart';
+import 'package:tcc_hpw_hello_programming_world/features/user/presentation/bloc/user_bloc.dart';
 
 part 'reward_event.dart';
 part 'reward_state.dart';
@@ -29,6 +31,13 @@ class RewardBloc extends Bloc<RewardEvent, RewardState> {
     }
   }
 
-  FutureOr<void> _onPurchaseReward(
-      PurchaseReward event, Emitter<RewardState> emit) {}
+  Future<FutureOr<void>> _onPurchaseReward(
+      PurchaseReward event, Emitter<RewardState> emit) async {
+    try {
+      var updatedUser =
+          await GetIt.I<RewardRepository>().purchaseReward(event.rewardId);
+
+      GetIt.I<UserBloc>().add(UpdateUser(user: updatedUser));
+    } catch (_) {}
+  }
 }
