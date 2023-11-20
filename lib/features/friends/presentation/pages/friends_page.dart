@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tcc_hpw_hello_programming_world/config/themes/app_theme.dart';
@@ -30,6 +31,10 @@ class _FriendsPageState extends State<FriendsPage> {
           if (state is Loading) {
             return const Center(child: _LoadingInfo());
           } else if (state is Loaded) {
+            var all = List<User>.from(state.user.friends)..add(state.user);
+            all.sort(
+              (a, b) => b.streak.compareTo(a.streak),
+            );
             return SafeArea(
                 child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -43,36 +48,42 @@ class _FriendsPageState extends State<FriendsPage> {
                           const SizedBox(height: 20),
                           Center(
                             child: Container(
-                              color: AppTheme.colorScheme.primary,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (state.user.name.isNotEmpty)
-                                    Text("Nome: ${state.user.name}",
+                              decoration: BoxDecoration(
+                                color: AppTheme.colorScheme.primary,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (state.user.name.isNotEmpty)
+                                      Text("Nome: ${state.user.name}",
+                                          style: AppTheme
+                                              .themeData.textTheme.titleMedium!
+                                              .copyWith(
+                                                  color: AppTheme
+                                                      .colorScheme.onPrimary)),
+                                    Text("Email: ${state.user.email}",
                                         style: AppTheme
                                             .themeData.textTheme.titleMedium!
                                             .copyWith(
                                                 color: AppTheme
                                                     .colorScheme.onPrimary)),
-                                  Text("Email: ${state.user.email}",
-                                      style: AppTheme
-                                          .themeData.textTheme.titleMedium!
-                                          .copyWith(
-                                              color: AppTheme
-                                                  .colorScheme.onPrimary)),
-                                  Text("Nível: ${state.user.level}",
-                                      style: AppTheme
-                                          .themeData.textTheme.titleMedium!
-                                          .copyWith(
-                                              color: AppTheme
-                                                  .colorScheme.onPrimary)),
-                                  Text("Streak: ${state.user.streak}",
-                                      style: AppTheme
-                                          .themeData.textTheme.titleMedium!
-                                          .copyWith(
-                                              color: AppTheme
-                                                  .colorScheme.onPrimary)),
-                                ],
+                                    Text("Nível: ${state.user.level}",
+                                        style: AppTheme
+                                            .themeData.textTheme.titleMedium!
+                                            .copyWith(
+                                                color: AppTheme
+                                                    .colorScheme.onPrimary)),
+                                    Text("Streak: ${state.user.streak}",
+                                        style: AppTheme
+                                            .themeData.textTheme.titleMedium!
+                                            .copyWith(
+                                                color: AppTheme
+                                                    .colorScheme.onPrimary)),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -80,33 +91,133 @@ class _FriendsPageState extends State<FriendsPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () => _showMyCode(state.user.id),
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                      AppTheme.colorScheme.secondary,
-                                      foregroundColor: AppTheme.colorScheme.onSecondary),
+                                          AppTheme.colorScheme.secondary,
+                                      foregroundColor:
+                                          AppTheme.colorScheme.onSecondary),
                                   child: const Text("Meu Código")),
                               ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () => _showSendInviteDialog(),
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor:
-                                      AppTheme.colorScheme.tertiary,
-                                      foregroundColor: AppTheme.colorScheme.onTertiary),
+                                          AppTheme.colorScheme.tertiary,
+                                      foregroundColor:
+                                          AppTheme.colorScheme.onTertiary),
                                   child: const Text("Enviar Convite"))
                             ],
-                          ),ListView.builder(
-                              itemCount: state.user.friends.length+1,
-                              itemBuilder: (context, index){
-                                List<User> rankingUsers = state.user.friends;
-                                rankingUsers.add(state.user);
-                              }
-                          )
-
+                          ),
+                          const SizedBox(height: 20),
+                          Text("Ranking",
+                              style: AppTheme.themeData.textTheme.titleLarge!
+                                  .copyWith(
+                                      color: AppTheme.colorScheme.tertiary)),
+                          const SizedBox(height: 20),
+                          ListView.separated(
+                              separatorBuilder: (context, index) =>
+                                  const Divider(
+                                    height: 1,
+                                  ),
+                              shrinkWrap: true,
+                              itemCount: all.length,
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(all[index].name,
+                                        style: AppTheme
+                                            .themeData.textTheme.titleMedium!
+                                            .copyWith(
+                                                color: AppTheme
+                                                    .colorScheme.primary)),
+                                    Text('${all[index].streak.toString()} dias',
+                                        style: AppTheme
+                                            .themeData.textTheme.titleMedium!
+                                            .copyWith(
+                                                color: AppTheme
+                                                    .colorScheme.primary)),
+                                  ],
+                                );
+                              }),
+                          const SizedBox(height: 20),
+                          Text("Convites pendentes",
+                              style: AppTheme.themeData.textTheme.titleLarge!
+                                  .copyWith(
+                                      color: AppTheme.colorScheme.tertiary)),
+                          const SizedBox(height: 20),
+                          ListView.separated(
+                              separatorBuilder: (context, index) =>
+                                  const Divider(
+                                    height: 1,
+                                  ),
+                              shrinkWrap: true,
+                              itemCount: state.user.invites.length,
+                              itemBuilder: (context, index) {
+                                return Text(
+                                    state.user.invites[index].receiver.name,
+                                    style: AppTheme
+                                        .themeData.textTheme.titleMedium!
+                                        .copyWith(
+                                            color:
+                                                AppTheme.colorScheme.primary));
+                              }),
                         ])));
           } else {
             return const Center(child: _FailedLoad());
           }
         });
+  }
+
+  Future<void> _showSendInviteDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Adicionar amigo'),
+          content: const TextField(
+            decoration: InputDecoration(hintText: 'Código do amigo'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Enviar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showMyCode(String userId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Meu Código'),
+          content: Text(userId),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Copiar'),
+              onPressed: () async {
+                await Clipboard.setData(ClipboardData(text: userId));
+              },
+            ),
+            TextButton(
+              child: const Text('Fechar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
