@@ -8,11 +8,9 @@ part 'invite.g.dart';
 class Invite with _$Invite {
   const factory Invite({
     required String id,
-    required User sender,
-    required User receiver,
-    required String status ,
+    required String fromUserId,
+    required String toUserId,
   }) = _Invite;
 
-  factory Invite.fromJson(Map<String, Object?> json) =>
-      _$InviteFromJson(json);
+  factory Invite.fromJson(Map<String, Object?> json) => _$InviteFromJson(json);
 }

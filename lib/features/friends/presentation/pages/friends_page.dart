@@ -31,7 +31,7 @@ class _FriendsPageState extends State<FriendsPage> {
           if (state is Loading) {
             return const Center(child: _LoadingInfo());
           } else if (state is Loaded) {
-            var all = List<User>.from(state.user.friends)..add(state.user);
+            var all = List<User>.from(state.friends)..add(state.user);
             all.sort(
               (a, b) => b.streak.compareTo(a.streak),
             );
@@ -155,13 +155,21 @@ class _FriendsPageState extends State<FriendsPage> {
                               shrinkWrap: true,
                               itemCount: state.user.invites.length,
                               itemBuilder: (context, index) {
-                                return Text(
-                                    state.user.invites[index].receiver.name,
-                                    style: AppTheme
-                                        .themeData.textTheme.titleMedium!
-                                        .copyWith(
-                                            color:
-                                                AppTheme.colorScheme.primary));
+                                var sender = state.inviteSenders
+                                    .where((a) =>
+                                        a.id ==
+                                        state.user.invites[index].fromUserId)
+                                    .first;
+                                return GestureDetector(
+                                  onTap: () => _showAcceptDialog(sender.name,
+                                      state.user.invites[index].id),
+                                  child: Text(sender.name,
+                                      style: AppTheme
+                                          .themeData.textTheme.titleMedium!
+                                          .copyWith(
+                                              color: AppTheme
+                                                  .colorScheme.primary)),
+                                );
                               }),
                         ])));
           } else {
@@ -171,19 +179,22 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   Future<void> _showSendInviteDialog() async {
+    var controller = TextEditingController();
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Adicionar amigo'),
-          content: const TextField(
-            decoration: InputDecoration(hintText: 'Código do amigo'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(hintText: 'Código do amigo'),
           ),
           actions: <Widget>[
             TextButton(
               child: const Text('Enviar'),
               onPressed: () {
+                _bloc.add(InviteUser(userId: controller.text));
                 Navigator.of(context).pop();
               },
             ),
@@ -210,6 +221,34 @@ class _FriendsPageState extends State<FriendsPage> {
             ),
             TextButton(
               child: const Text('Fechar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showAcceptDialog(String name, String inviteId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Aceitar convite'),
+          content: Text('Deseja aceitar o convite de $name'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Sim'),
+              onPressed: () async {
+                _bloc.add(AcceptInvite(inviteId: inviteId));
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Não'),
               onPressed: () {
                 Navigator.of(context).pop();
               },

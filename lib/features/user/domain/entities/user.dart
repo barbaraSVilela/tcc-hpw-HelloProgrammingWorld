@@ -15,7 +15,7 @@ class User with _$User {
     required int level,
     required int coins,
     @Default([]) List<Reward> rewards,
-    @Default([]) List<User> friends,
+    @Default([]) List<String> friends,
     @Default([]) List<Invite> invites,
     @Default({}) Map<DateTime, String> solvedChallenges,
     @Default({}) Map<DateTime, String> failedChallenges,

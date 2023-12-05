@@ -1,5 +1,6 @@
 import 'package:tcc_hpw_hello_programming_world/features/authentication/authentication_locator.dart';
 import 'package:tcc_hpw_hello_programming_world/features/challenge/challenge_locator.dart';
+import 'package:tcc_hpw_hello_programming_world/features/friends/friends_locator.dart';
 import 'package:tcc_hpw_hello_programming_world/features/give_help/give_help_locator.dart';
 import 'package:tcc_hpw_hello_programming_world/features/rewards/reward_locator.dart';
 import 'package:tcc_hpw_hello_programming_world/features/user/user_locator.dart';
@@ -18,5 +19,6 @@ class LocatorService {
     RewardLocator().register();
     UserLocator().register();
     GiveHelpLocator().register();
+    FriendsLocator().register();
   }
 }

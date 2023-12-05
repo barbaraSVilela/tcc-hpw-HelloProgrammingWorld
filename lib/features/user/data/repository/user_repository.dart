@@ -7,4 +7,9 @@ class UserRepository {
     var client = GetIt.I<UserRestClient>();
     return client.getUser();
   }
+
+  Future<User> getUserById(String userId) {
+    var client = GetIt.I<UserRestClient>();
+    return client.getUserById(userId);
+  }
 }
